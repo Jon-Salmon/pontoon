@@ -13,6 +13,7 @@ from pontoon.sync.formats import (
     po,
     silme,
     xliff,
+    arb,
 )
 
 # To add support for a new resource format, add an entry to this dict
@@ -24,6 +25,7 @@ SUPPORTED_FORMAT_PARSERS = {
     '.inc': silme.parse_inc,
     '.ini': silme.parse_ini,
     '.json': json_extensions.parse,
+    '.arb': arb.parse,
     '.lang': lang.parse,
     '.po': po.parse,
     '.pot': po.parse,
