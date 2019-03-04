@@ -15,6 +15,7 @@ supported file formats:
 - .properties
 - .xliff
 - .xml (Android)
+- .arb
 
 Pontoon can pull strings it needs to translate from an external source, and write
 them back periodically. Typically these external sources are version control
