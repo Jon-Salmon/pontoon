@@ -607,7 +607,6 @@ class VCSResource(object):
         # Create entities using resources from the source directory,
         source_resource_path = os.path.join(vcs_project.source_directory_path, self.path)
         source_resource_path = locale_to_source_path(source_resource_path)
-        log.debug('Begining parse: %s', source_resource_path)
         source_resource_file = formats.parse(
             source_resource_path,
             locale=Locale.objects.get(code='en-US')
