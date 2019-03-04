@@ -1754,6 +1754,7 @@ class Resource(models.Model):
         ('inc', 'inc'),
         ('ini', 'ini'),
         ('json', 'json'),
+        ('arb', 'arb'),
         ('lang', 'lang'),
         ('po', 'po'),
         ('properties', 'properties'),
@@ -1775,6 +1776,7 @@ class Resource(models.Model):
         'inc',
         'ini',
         'json',
+        'arb',
         'properties',
         'xml',
     )
