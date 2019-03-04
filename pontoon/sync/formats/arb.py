@@ -1,9 +1,6 @@
 """
-Parser for the .json translation format as used by the WebExtensions API:
-https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Internationalization
-
-See also:
-https://www.chromium.org/developers/design-documents/extensions/how-the-extension-system-works/i18n
+Parser for the .arb translation format as used by Flutter:
+https://github.com/googlei18n/app-resource-bundle/wiki/ApplicationResourceBundleSpecification
 """
 import codecs
 import copy
@@ -23,41 +20,12 @@ from pontoon.sync.vcs.models import VCSTranslation
 
 log = logging.getLogger(__name__)
 
-SCHEMA = {
-    "type": "object",
-    "additionalProperties": {
-        "type": "object",
-        "properties": {
-            "message": {
-                "type": "string"
-            },
-            "description": {
-                "type": "string"
-            },
-            "placeholders": {
-                "type": "object",
-                "additionalProperties": {
-                    "type": "object",
-                    "properties": {
-                        "content": {
-                            "type": "string"
-                        },
-                        "example": {
-                            "type": "string"
-                        }
-                    },
-                    "required": ["content"]
-                }
-            }
-        },
-        "required": ["message"]
-    }
-}
+SCHEMA = { "type": "object" }
 
 
-class JSONEntity(VCSTranslation):
+class ARBEntity(VCSTranslation):
     """
-    Represents an entity in a JSON file.
+    Represents an entity in a ARB file.
     """
     def __init__(self, order, key, data):
         self.key = key
@@ -67,7 +35,7 @@ class JSONEntity(VCSTranslation):
 
     @property
     def source_string(self):
-        return self.data['message']
+        return self.data
 
     @property
     def source_string_plural(self):
@@ -75,7 +43,7 @@ class JSONEntity(VCSTranslation):
 
     @property
     def comments(self):
-        return [self.data['description']] if 'description' in self.data else []
+        return []
 
     @property
     def fuzzy(self):
@@ -87,10 +55,10 @@ class JSONEntity(VCSTranslation):
 
     @property
     def source(self):
-        return self.data.get('placeholders', [])
+        return []
 
 
-class JSONResource(ParsedResource):
+class ARBResource(ParsedResource):
     def __init__(self, path, source_resource=None):
         self.path = path
         self.entities = {}
@@ -100,9 +68,9 @@ class JSONResource(ParsedResource):
         if source_resource:
             for key, entity in source_resource.entities.items():
                 data = copy.copy(entity.data)
-                data['message'] = None
+                data = None
 
-                self.entities[key] = JSONEntity(
+                self.entities[key] = ARBEntity(
                     entity.order,
                     entity.key,
                     data,
@@ -126,7 +94,7 @@ class JSONResource(ParsedResource):
                 raise ParseError(err)
 
         for order, (key, data) in enumerate(self.json_file.items()):
-            self.entities[key] = JSONEntity(
+            self.entities[key] = ARBEntity(
                 order,
                 key,
                 data,
@@ -144,7 +112,7 @@ class JSONResource(ParsedResource):
         """
         if not self.source_resource:
             raise SyncError(
-                'Cannot save JSON resource {0}: No source resource given.'
+                'Cannot save ARB resource {0}: No source resource given.'
                 .format(self.path)
             )
 
@@ -161,7 +129,7 @@ class JSONResource(ParsedResource):
             entity = self.entities[key]
 
             if entity.strings:
-                json_file[key]['message'] = entity.strings[None]
+                json_file[key] = entity.strings[None]
             else:
                 del json_file[key]
 
@@ -175,8 +143,8 @@ class JSONResource(ParsedResource):
 
 def parse(path, source_path=None, locale=None):
     if source_path is not None:
-        source_resource = JSONResource(source_path)
+        source_resource = ARBResource(source_path)
     else:
         source_resource = None
 
-    return JSONResource(path, source_resource)
+    return ARBResource(path, source_resource)
